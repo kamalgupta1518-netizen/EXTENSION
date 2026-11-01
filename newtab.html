@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab | Antigravity Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark theme-neon-green">
+  <!-- Fullscreen Drag & Drop Laptop Image Overlay -->
+  <div id="wallpaper-dropzone" class="dropzone-overlay">
+    <div class="dropzone-box">
+      <span class="dropzone-icon">🖼️</span>
+      <h3>Drop Image from Laptop Here</h3>
+      <p>Instant 100% Crystal-Clear Wallpaper</p>
+    </div>
+  </div>
+
+  <!-- Dynamic Photo Background Layer -->
+  <div id="custom-bg-image" class="custom-bg-layer"></div>
+
+  <!-- Dynamic Animated Video Live Wallpaper Layer -->
+  <video id="custom-bg-video" class="custom-bg-video" autoplay loop playsinline></video>
+
+  <!-- Interactive 3D / Zero-Gravity Canvas Live Wallpaper -->
+  <canvas id="antigravity-canvas"></canvas>
+
+  <!-- Atmospheric Dark Dimming & Blur Overlay -->
+  <div id="bg-overlay" class="bg-dim-overlay"></div>
+
+  <!-- Active Ringing Alarm Notification Overlay / Banner -->
+  <div id="alarm-ringing-overlay" class="alarm-ringing-overlay">
+    <div class="alarm-ringing-card glass-panel">
+      <div class="alarm-bell-animation">
+        <div class="alarm-pulse-ring"></div>
+        <div class="alarm-pulse-ring delay"></div>
+        <span class="alarm-bell-icon">🔔</span>
+      </div>
+      <div class="alarm-ringing-content">
+        <div class="alarm-badge-row">
+          <span class="alarm-live-badge">⏰ ALARM RINGING</span>
+          <span id="alarm-ringing-time" class="alarm-time-tag">14:00</span>
+        </div>
+        <h3 id="alarm-ringing-title">Stay Hydrated</h3>
+        <p id="alarm-ringing-msg">Time to drink a fresh glass of water 💧</p>
+      </div>
+      <div class="alarm-ringing-actions">
+        <button type="button" id="btn-stop-alarm-sound" class="btn-stop-alarm" title="Stop Alarm Sound (Press Space or Escape)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <rect x="5" y="5" width="14" height="14" rx="2"></rect>
+          </svg>
+          <span>Stop Alarm</span>
+        </button>
+        <button type="button" id="btn-snooze-alarm" class="btn-snooze-alarm" title="Snooze for 5 minutes">
+          <span>💤 Snooze 5m</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="toast-notification"></div>
+
+  <!-- Zen Mode Floating Exit Button -->
+  <button id="btn-exit-zen" class="btn-exit-zen" title="Exit Zen Mode (Press 'Z' or Escape)">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+    <span>Show Dashboard</span>
+  </button>
+
+  <div class="app-container" id="main-app-container">
+    <!-- Top Navigation & Status Bar -->
+    <header class="top-bar glass-panel">
+      <div class="brand">
+        <div class="brand-orb"></div>
+        <span class="brand-text">ANTIGRAVITY</span>
+        <span class="brand-tag">v3.0</span>
+      </div>
+
+      <!-- Center Segmented View Switcher Dock -->
+      <nav class="main-tabs-dock glass-panel-subtle" aria-label="Dashboard Navigation">
+        <button class="nav-tab-btn active" data-view="view-home">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Home</span>
+        </button>
+        <button class="nav-tab-btn" data-view="view-boards">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Boards</span>
+        </button>
+        <button class="nav-tab-btn" data-view="view-focus">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Focus & Stats</span>
+        </button>
+        <button class="nav-tab-btn" data-view="view-reminders">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span>Reminders</span>
+          <span class="badge-count" id="nav-reminders-count">1</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Video Audio / Voice Quick Toggle (shown when video wallpaper is active) -->
+        <button id="btn-toggle-video-sound" class="action-icon-btn highlight-hover" title="Toggle Video Wallpaper Audio / Voice" style="display: none;">
+          <svg id="video-sound-icon-unmuted" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="video-sound-icon-muted" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Zen Mode Toggle -->
+        <button id="btn-toggle-zen" class="action-icon-btn highlight-hover" title="Zen Mode: Hide UI to view Wallpaper (Press 'Z')">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+
+        <!-- Wallpaper & 3D Studio Button -->
+        <button id="btn-open-bg-studio" class="action-icon-btn highlight-hover" title="Wallpaper & Live 3D Studio">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </button>
+
+        <!-- Date & Clock Settings Button -->
+        <button id="btn-open-date-settings" class="action-icon-btn" title="Customize Day, Date & Clock Format">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </button>
+
+        <!-- Zero-G Physics Switch -->
+        <button id="toggle-antigravity" class="btn-toggle-antigravity active" title="Toggle zero-gravity physics on cards">
+          <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span class="btn-label">Zero-G</span>
+          <span class="indicator-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- TAB VIEW 1: HOME (Hero & Wallpaper Showcase) -->
+    <section class="dashboard-view active" id="view-home">
+      <div class="hero-home-center">
+        <!-- Floating Hero Clock & Greeting -->
+        <div class="time-greeting-wrapper" id="header-datetime-container" title="Click to customize Day, Date & Clock format">
+          <div class="digital-clock-row">
+            <span class="digital-clock" id="digital-clock">00:00:00</span>
+            <span class="clock-ampm" id="clock-ampm" style="display: none;">AM</span>
+          </div>
+          <div class="date-greeting">
+            <span id="greeting-text">Good day</span>, <span id="user-display-name">Explorer</span> • <span id="current-date">Loading...</span>
+          </div>
+          <div class="milestone-pill" id="milestone-pill" style="display: none;">
+            <span class="milestone-icon">⏳</span>
+            <span id="milestone-text">Countdown Event</span>
+          </div>
+        </div>
+
+        <!-- Central Omnibar Search Box with Gemini AI -->
+        <div class="search-section">
+          <div class="search-bar glass-panel">
+            <div class="search-engine-picker" id="engine-picker">
+              <span class="engine-icon" id="current-engine-icon">🔍</span>
+              <select id="search-engine-select" aria-label="Search Engine">
+                <option value="google">Google</option>
+                <option value="gemini">✨ Gemini AI</option>
+                <option value="duckduckgo">DuckDuckGo</option>
+                <option value="github">GitHub</option>
+                <option value="youtube">YouTube</option>
+                <option value="reddit">Reddit</option>
+              </select>
+            </div>
+            <input type="text" id="search-input" placeholder="Search the cosmos or ask Gemini AI (Press '/' to focus)..." autocomplete="off" spellcheck="false">
+            <button id="search-clear-btn" class="search-action-btn" title="Clear Search" style="display: none;">✕</button>
+            <button id="search-submit-btn" class="search-action-btn" title="Search">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Launch Dock (Includes Google Gemini, GitHub, YouTube, etc.) -->
+        <div class="quick-launcher-row" id="home-quick-launcher"></div>
+
+        <!-- Compact Glance Bar -->
+        <div class="home-glance-bar glass-panel">
+          <div class="glance-item" id="glance-pomodoro-trigger" title="Open Focus Chamber">
+            <span class="status-indicator pomodoro-pulse"></span>
+            <span>Focus: <strong id="glance-timer-display">25:00</strong></span>
+          </div>
+          <div class="glance-divider"></div>
+          <div class="glance-item" id="glance-weekly-trigger" title="Open Weekly Target">
+            <span class="status-indicator weekly-indicator"></span>
+            <span>Weekly Goal: <strong id="glance-weekly-hours">0.0 / 20h</strong></span>
+          </div>
+          <div class="glance-divider"></div>
+          <div class="glance-item" id="glance-reminder-trigger" title="Open Reminders">
+            <span class="status-indicator reminder-bell"></span>
+            <span id="glance-next-reminder-text">Next: Stay Hydrated (14:00)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB VIEW 2: BOARDS (LumiList Grid) -->
+    <section class="dashboard-view" id="view-boards">
+      <div class="view-header-bar">
+        <div class="view-title-group">
+          <h2>📌 Visual Boards & Tasks</h2>
+          <p>Organize your links, projects, and daily tasks in zero-g draggable cards.</p>
+        </div>
+        <button id="btn-new-board" class="btn-primary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Board</span>
+        </button>
+      </div>
+
+      <div class="boards-grid-container" id="boards-container"></div>
+    </section>
+
+    <!-- TAB VIEW 3: FOCUS & STATS -->
+    <section class="dashboard-view" id="view-focus">
+      <div class="view-header-bar">
+        <div class="view-title-group">
+          <h2>⏱️ Focus Chamber & Study Targets</h2>
+          <p>Deep work intervals with Pomodoro timer & weekly analytics tracker.</p>
+        </div>
+      </div>
+
+      <div class="focus-dashboard-grid">
+        <!-- Pomodoro Focus Chamber -->
+        <div class="pomodoro-card glass-panel" id="pomodoro-widget">
+          <div class="widget-header">
+            <div class="widget-title">
+              <span class="status-indicator pomodoro-pulse"></span>
+              <span>Focus Chamber</span>
+            </div>
+            <div class="pomodoro-modes">
+              <button class="mode-pill active" data-mode="work">Focus</button>
+              <button class="mode-pill" data-mode="shortBreak">Break</button>
+            </div>
+          </div>
+
+          <div class="pomodoro-body">
+            <div class="timer-display-ring">
+              <svg class="progress-ring" width="130" height="130">
+                <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.08)" stroke-width="6" fill="transparent" r="56" cx="65" cy="65"/>
+                <circle id="timer-progress-ring" class="progress-ring-circle" stroke="url(#gradient-ring)" stroke-width="6" stroke-linecap="round" fill="transparent" r="56" cx="65" cy="65"/>
+                <defs>
+                  <linearGradient id="gradient-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00ff88" />
+                    <stop offset="100%" stop-color="#05df72" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="timer-time" id="timer-display">25:00</div>
+            </div>
+
+            <div class="pomodoro-controls">
+              <button id="btn-timer-toggle" class="btn-timer-primary">
+                <svg id="timer-play-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span id="timer-toggle-label">Start Session</span>
+              </button>
+              <div class="control-sub-row">
+                <button id="btn-timer-reset" class="btn-timer-secondary" title="Reset Timer">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                  </svg>
+                  <span>Reset</span>
+                </button>
+                <button id="btn-timer-settings" class="btn-timer-secondary" title="Timer Settings">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  <span>Durations</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Focus Tracker -->
+        <div class="weekly-timer-card glass-panel" id="weekly-timer-widget">
+          <div class="widget-header">
+            <div class="widget-title">
+              <span class="status-indicator weekly-indicator"></span>
+              <span>Weekly Target Progress</span>
+            </div>
+            <button class="btn-icon-subtle" id="btn-weekly-settings" title="Configure Weekly Goal">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="weekly-timer-body">
+            <div class="weekly-stats-header">
+              <div class="weekly-hours-num">
+                <span id="weekly-hours-current">0.0</span>
+                <span class="weekly-target-total">/ <span id="weekly-hours-target">20</span> hours</span>
+              </div>
+              <div class="weekly-percent-badge" id="weekly-percent-badge">0%</div>
+            </div>
+
+            <div class="weekly-progress-bar-wrap">
+              <div class="weekly-progress-bar-fill" id="weekly-progress-bar" style="width: 0%;"></div>
+            </div>
+
+            <div class="weekly-days-chart" id="weekly-days-chart"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB VIEW 4: REMINDERS -->
+    <section class="dashboard-view" id="view-reminders">
+      <div class="view-header-bar">
+        <div class="view-title-group">
+          <h2>🔔 Scheduled Alarms & Reminders</h2>
+          <p>Set custom daily & weekly recurring notifications with audible ringing chimes & desktop alerts.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button id="btn-test-alarm-sound" class="btn-secondary" title="Test the Alarm Sound & Stop Button">
+            <span>🔊 Test Alarm Sound</span>
+          </button>
+          <button id="btn-add-reminder-modal-trigger" class="btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Reminder</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="reminders-dashboard-container glass-panel">
+        <div class="reminders-list" id="reminders-dashboard-list"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal: Background & Live 3D Wallpaper Studio -->
+  <div class="modal-backdrop" id="modal-bg-studio">
+    <div class="modal-dialog glass-panel modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+          <h3>Wallpaper & Live 3D Studio</h3>
+        </div>
+        <button class="modal-close" data-close-modal="modal-bg-studio">✕</button>
+      </div>
+
+      <div class="studio-tabs-bar">
+        <button class="studio-tab-btn" data-tab="tab-photo-wallpapers">📸 Laptop Photos & Presets</button>
+        <button class="studio-tab-btn active" data-tab="tab-live-3d">🌌 Live 3D Wallpapers</button>
+        <button class="studio-tab-btn" data-tab="tab-video-wallpapers">🎬 Video Live Loops</button>
+        <button class="studio-tab-btn" data-tab="tab-effects">✨ Atmosphere & Tuning</button>
+      </div>
+
+      <!-- Tab 1: Custom Photos & Presets (Laptop Upload) -->
+      <div class="studio-tab-content" id="tab-photo-wallpapers">
+        <div class="photo-upload-section">
+          <!-- Active Laptop Wallpaper Status Display -->
+          <div id="active-laptop-photo-box" class="uploaded-preview-box" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img id="active-laptop-thumb" class="uploaded-preview-thumb" src="" alt="Active Wallpaper">
+              <div>
+                <strong style="font-size: 0.85rem; color: #fff;">Active Laptop Wallpaper</strong>
+                <p style="font-size: 0.72rem; color: var(--text-secondary);">100% Crystal-Clear Native Quality</p>
+              </div>
+            </div>
+            <button type="button" id="btn-clear-laptop-photo" class="btn-secondary" style="font-size: 0.75rem; padding: 6px 12px;">Remove Photo</button>
+          </div>
+
+          <div class="upload-options-row">
+            <label class="custom-file-upload btn-primary" style="font-size: 0.95rem; padding: 12px 20px;">
+              <input type="file" id="bg-file-input" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" style="display: none;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Choose Photo from Laptop</span>
+            </label>
+            <span class="or-divider">OR</span>
+            <div class="url-input-wrap">
+              <input type="url" id="bg-url-input" placeholder="Paste direct image URL (https://...)">
+              <button type="button" id="btn-apply-url-bg" class="btn-secondary">Apply URL</button>
+            </div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">💡 <em>Tip: You can also drag and drop any image file directly onto this tab page anytime!</em></p>
+        </div>
+
+        <h4 class="section-subheading" style="margin-top: 18px;">Curated 4K Aesthetic Presets (Click to Apply Instantly)</h4>
+        <div class="wallpaper-cards-grid">
+          <!-- Preset 1: Cyber Emerald Matrix -->
+          <div class="wallpaper-preset-card" data-photo-preset="matrix_glow" data-url="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=2560&auto=format&fit=crop&q=80">
+            <div class="card-preview photo-preset-green"></div>
+            <div class="preset-info">
+              <h4>Cyber Emerald Glow</h4>
+              <p>Abstract glowing emerald particle streams</p>
+            </div>
+          </div>
+
+          <!-- Preset 2: Deep Celestial Nebula -->
+          <div class="wallpaper-preset-card" data-photo-preset="nebula" data-url="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=2560&auto=format&fit=crop&q=80">
+            <div class="card-preview photo-preset-1"></div>
+            <div class="preset-info">
+              <h4>Deep Celestial Nebula</h4>
+              <p>Vibrant astronomical interstellar clouds</p>
+            </div>
+          </div>
+
+          <!-- Preset 3: Cyberpunk Tokyo -->
+          <div class="wallpaper-preset-card" data-photo-preset="cyberpunk" data-url="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=2560&auto=format&fit=crop&q=80">
+            <div class="card-preview photo-preset-2"></div>
+            <div class="preset-info">
+              <h4>Cyberpunk Midnight Skyline</h4>
+              <p>Rainy neon cityscape with reflective wet streets</p>
+            </div>
+          </div>
+
+          <!-- Preset 4: Minimalist Dark Mountains -->
+          <div class="wallpaper-preset-card" data-photo-preset="mountains" data-url="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2560&auto=format&fit=crop&q=80">
+            <div class="card-preview photo-preset-3"></div>
+            <div class="preset-info">
+              <h4>Minimalist Alpine Ridge</h4>
+              <p>Muted dark mountain silhouettes in midnight mist</p>
+            </div>
+          </div>
+
+          <!-- Preset 5: Aesthetic Twilight -->
+          <div class="wallpaper-preset-card" data-photo-preset="sunset" data-url="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=2560&auto=format&fit=crop&q=80">
+            <div class="card-preview photo-preset-4"></div>
+            <div class="preset-info">
+              <h4>Anime Twilight Horizon</h4>
+              <p>Pastel gradient skies and distant celestial stars</p>
+            </div>
+          </div>
+
+          <!-- Preset 6: Pure OLED Void -->
+          <div class="wallpaper-preset-card" data-photo-preset="oled" data-url="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100%' height='100%' fill='%23000000'/></svg>">
+            <div class="card-preview photo-preset-5"></div>
+            <div class="preset-info">
+              <h4>Pure OLED Void</h4>
+              <p>Pitch black background for maximum contrast</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Live 3D Wallpapers -->
+      <div class="studio-tab-content active" id="tab-live-3d">
+        <div class="wallpaper-cards-grid">
+          <!-- Live 1: Antigravity Particles -->
+          <div class="wallpaper-preset-card active" data-live-mode="antigravity">
+            <div class="card-preview live-preview-antigravity">
+              <div class="preview-badge">3D Physics</div>
+            </div>
+            <div class="preset-info">
+              <h4>Antigravity Cosmic Nebula</h4>
+              <p>Zero-g drifting stars with glowing emerald links and mouse repulsion field.</p>
+            </div>
+          </div>
+
+          <!-- Live 2: 3D Hyperspace Warp -->
+          <div class="wallpaper-preset-card" data-live-mode="hyperspace">
+            <div class="card-preview live-preview-warp">
+              <div class="preview-badge">3D Warp Speed</div>
+            </div>
+            <div class="preset-info">
+              <h4>3D Hyperspace Starfield</h4>
+              <p>Relativistic star tunnel zooming towards the screen, steered by mouse orientation.</p>
+            </div>
+          </div>
+
+          <!-- Live 3: 3D Synthwave Horizon Grid -->
+          <div class="wallpaper-preset-card" data-live-mode="synthwave">
+            <div class="card-preview live-preview-synthwave">
+              <div class="preview-badge">Cyberpunk 3D</div>
+            </div>
+            <div class="preset-info">
+              <h4>Synthwave Retro Horizon</h4>
+              <p>Undulating neon emerald wireframe grid flowing beneath a luminous sun.</p>
+            </div>
+          </div>
+
+          <!-- Live 4: 3D Matrix Polyhedra -->
+          <div class="wallpaper-preset-card" data-live-mode="polyhedra">
+            <div class="card-preview live-preview-polyhedra">
+              <div class="preview-badge">Geometric 3D</div>
+            </div>
+            <div class="preset-info">
+              <h4>Zero-G Geometric Matrix</h4>
+              <p>Floating 3D wireframe cubes revolving in multi-axis inertia with glowing edges.</p>
+            </div>
+          </div>
+
+          <!-- Live 5: Cyber Matrix Digital Rain -->
+          <div class="wallpaper-preset-card" data-live-mode="matrix_rain">
+            <div class="card-preview live-preview-matrix">
+              <div class="preview-badge">Matrix Stream</div>
+            </div>
+            <div class="preset-info">
+              <h4>Cyber Matrix Rain</h4>
+              <p>Streaming luminous code cascades and glowing emerald glyph trails.</p>
+            </div>
+          </div>
+
+          <!-- Live 6: Cosmic Aurora Waves -->
+          <div class="wallpaper-preset-card" data-live-mode="aurora">
+            <div class="card-preview live-preview-aurora">
+              <div class="preview-badge">Atmospheric</div>
+            </div>
+            <div class="preset-info">
+              <h4>Cosmic Aurora Waves</h4>
+              <p>Dynamic undulating celestial green ribbon light curtains across space.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Video Live Wallpapers -->
+      <div class="studio-tab-content" id="tab-video-wallpapers">
+        <div class="photo-upload-section">
+          <div class="upload-options-row">
+            <label class="custom-file-upload btn-primary">
+              <input type="file" id="bg-video-input" accept="video/mp4,video/webm" style="display: none;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+              </svg>
+              <span>Upload Video from Laptop (MP4 / WebM)</span>
+            </label>
+            <span class="or-divider">OR</span>
+            <div class="url-input-wrap">
+              <input type="url" id="bg-video-url-input" placeholder="Paste direct video URL (https://...mp4)">
+              <button type="button" id="btn-apply-video-url" class="btn-secondary">Apply Video</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Audio & Voice Controls -->
+        <div class="video-audio-control-card glass-panel" style="margin-top: 14px; padding: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.2rem;">🔊</span>
+              <div>
+                <h4 style="font-size: 0.9rem; color: #fff; margin: 0;">Video Audio & Voice</h4>
+                <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 0;">Play background video soundtrack, ambience, or voice</p>
+              </div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setting-video-audio-toggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="form-group full-width" id="video-volume-group" style="margin-bottom: 0;">
+            <div class="slider-label-row">
+              <label for="setting-video-volume" style="font-size: 0.78rem;">Voice / Audio Volume</label>
+              <span class="slider-value-display" id="video-volume-display">80%</span>
+            </div>
+            <input type="range" id="setting-video-volume" min="0" max="100" value="80" class="custom-range">
+          </div>
+        </div>
+
+        <h4 class="section-subheading" style="margin-top: 16px;">Curated Animated Video Loops</h4>
+        <div class="wallpaper-cards-grid">
+          <div class="wallpaper-preset-card" data-video-preset="cyber_city" data-video-url="https://assets.mixkit.co/videos/preview/mixkit-futuristic-city-with-traffic-at-night-42173-large.mp4">
+            <div class="card-preview video-preset-1">
+              <div class="preview-badge">Live Video</div>
+            </div>
+            <div class="preset-info">
+              <h4>Futuristic Cyber City Traffic</h4>
+              <p>Looping cinematic night city traffic flyover</p>
+            </div>
+          </div>
+
+          <div class="wallpaper-preset-card" data-video-preset="deep_space" data-video-url="https://assets.mixkit.co/videos/preview/mixkit-flight-through-space-and-stars-41547-large.mp4">
+            <div class="card-preview video-preset-2">
+              <div class="preview-badge">Live Video</div>
+            </div>
+            <div class="preset-info">
+              <h4>Deep Nebula Voyage</h4>
+              <p>Slow animated flight through deep cosmos and star clouds</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Atmosphere & Tuning -->
+      <div class="studio-tab-content" id="tab-effects">
+        <div class="settings-grid">
+          <div class="form-group full-width">
+            <div class="slider-label-row">
+              <label for="setting-bg-dim">Background Dimming Darkness</label>
+              <span class="slider-value-display" id="dim-value-display">0%</span>
+            </div>
+            <input type="range" id="setting-bg-dim" min="0" max="85" value="0" class="custom-range">
+            <span class="setting-hint">Set to 0% for 100% full, bright wallpaper visibility.</span>
+          </div>
+
+          <div class="form-group full-width">
+            <div class="slider-label-row">
+              <label for="setting-bg-blur">Photo Wallpaper Glass Blur</label>
+              <span class="slider-value-display" id="blur-value-display">0px</span>
+            </div>
+            <input type="range" id="setting-bg-blur" min="0" max="25" value="0" class="custom-range">
+            <span class="setting-hint">Set to 0px for crystal-clear sharp wallpaper.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" data-close-modal="modal-bg-studio">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Custom Day, Date & Clock Settings -->
+  <div class="modal-backdrop" id="modal-date-settings">
+    <div class="modal-dialog glass-panel modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <h3>Customize Day, Date & Clock</h3>
+        </div>
+        <button class="modal-close" data-close-modal="modal-date-settings">✕</button>
+      </div>
+      <form id="form-date-settings">
+        <div class="settings-grid">
+          <div class="form-group">
+            <label for="setting-user-name">Display Name / Title</label>
+            <input type="text" id="setting-user-name" placeholder="e.g. Kamal, Commander" value="Explorer">
+          </div>
+
+          <div class="form-group">
+            <label for="setting-custom-greeting">Custom Greeting Prefix (Optional)</label>
+            <input type="text" id="setting-custom-greeting" placeholder="Leave empty for auto (Good Morning/Evening)">
+          </div>
+
+          <div class="form-group">
+            <label for="setting-clock-format">Time / Clock Format</label>
+            <select id="setting-clock-format">
+              <option value="24h">24-Hour (14:30:00)</option>
+              <option value="12h">12-Hour AM/PM (02:30 PM)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-show-seconds">Seconds Display</label>
+            <select id="setting-show-seconds">
+              <option value="true">Show Seconds (00:00:00)</option>
+              <option value="false">Hide Seconds (00:00)</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="setting-date-format">Day & Date Display Format</label>
+            <select id="setting-date-format">
+              <option value="full">Full (e.g. Saturday, August 22, 2026)</option>
+              <option value="short">Short (e.g. Sat, 22 Aug 2026)</option>
+              <option value="numeric_dmy">Numeric Day/Month/Year (e.g. 22/08/2026)</option>
+              <option value="numeric_mdy">Numeric Month/Day/Year (e.g. 08/22/2026)</option>
+              <option value="iso">ISO Standard (e.g. 2026-08-22)</option>
+              <option value="week_day">Week & Day of Year (e.g. Week 34 • Day 234)</option>
+            </select>
+          </div>
+
+          <hr class="modal-divider full-width">
+
+          <div class="form-group">
+            <label for="setting-countdown-name">Special Milestone / Event Countdown</label>
+            <input type="text" id="setting-countdown-name" placeholder="e.g. Hackathon Launch, Final Exam">
+          </div>
+
+          <div class="form-group">
+            <label for="setting-countdown-date">Event Target Date</label>
+            <input type="date" id="setting-countdown-date">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close-modal="modal-date-settings">Cancel</button>
+          <button type="submit" class="btn-primary">Apply Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Weekly Target Timer Settings -->
+  <div class="modal-backdrop" id="modal-weekly-timer-settings">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <h3>Weekly Target & Sprints</h3>
+        </div>
+        <button class="modal-close" data-close-modal="modal-weekly-timer-settings">✕</button>
+      </div>
+      <form id="form-weekly-settings">
+        <div class="form-group">
+          <label for="setting-weekly-target-hours">Weekly Target (Hours)</label>
+          <input type="number" id="setting-weekly-target-hours" min="1" max="100" value="20" required>
+        </div>
+
+        <div class="form-group">
+          <label for="setting-weekly-start-day">Week Starts On</label>
+          <select id="setting-weekly-start-day">
+            <option value="mon">Monday</option>
+            <option value="sun">Sunday</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="setting-manual-add-minutes">Quick Log Focus Minutes (Today)</label>
+          <div class="input-with-action">
+            <input type="number" id="setting-manual-add-minutes" min="5" max="480" placeholder="e.g. 30 min">
+            <button type="button" id="btn-manual-log-time" class="btn-secondary">Add</button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-reset-weekly-data">Reset This Week</button>
+          <button type="submit" class="btn-primary">Save Target</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add / Edit Item (Bookmark or Task) -->
+  <div class="modal-backdrop" id="modal-item">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h3 id="modal-item-title">Add Item</h3>
+        <button class="modal-close" data-close-modal="modal-item">✕</button>
+      </div>
+      <form id="form-item">
+        <input type="hidden" id="item-board-id">
+        <input type="hidden" id="item-edit-id">
+        <input type="hidden" id="item-board-type">
+
+        <div class="form-group">
+          <label for="item-title-input">Title / Description</label>
+          <input type="text" id="item-title-input" required placeholder="e.g. GitHub Repository or Review Code">
+        </div>
+
+        <div class="form-group" id="group-bookmark-url">
+          <label for="item-url-input">Target URL</label>
+          <input type="url" id="item-url-input" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group" id="group-task-tag">
+          <label for="item-tag-input">Tag / Category</label>
+          <select id="item-tag-input">
+            <option value="general">General</option>
+            <option value="urgent">Urgent</option>
+            <option value="work">Work</option>
+            <option value="dev">Dev</option>
+            <option value="health">Health</option>
+            <option value="daily">Daily</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close-modal="modal-item">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-save-item">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Board -->
+  <div class="modal-backdrop" id="modal-board">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h3>Create New Board</h3>
+        <button class="modal-close" data-close-modal="modal-board">✕</button>
+      </div>
+      <form id="form-board">
+        <div class="form-group">
+          <label for="board-name-input">Board Name</label>
+          <input type="text" id="board-name-input" required placeholder="e.g. Dev Tools, Reading List">
+        </div>
+
+        <div class="form-group">
+          <label for="board-type-select">Board Content Type</label>
+          <select id="board-type-select">
+            <option value="bookmark">Bookmarks & Links (Visual Cards)</option>
+            <option value="task">Tasks & Checklists (Interactive To-Dos)</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close-modal="modal-board">Cancel</button>
+          <button type="submit" class="btn-primary">Create Board</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Scheduled Reminders -->
+  <div class="modal-backdrop" id="modal-reminders">
+    <div class="modal-dialog glass-panel modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <h3>Add Scheduled Reminder</h3>
+        </div>
+        <button class="modal-close" data-close-modal="modal-reminders">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-reminder" class="reminder-form-grid">
+          <div class="form-group">
+            <label for="rem-title-input">Reminder Title</label>
+            <input type="text" id="rem-title-input" required placeholder="e.g., Hydrate, Team Sync, Weekly Review">
+          </div>
+          <div class="form-group">
+            <label for="rem-time-input">Trigger Time</label>
+            <input type="time" id="rem-time-input" required value="14:00">
+          </div>
+          <div class="form-group full-width">
+            <label for="rem-msg-input">Notification Message</label>
+            <input type="text" id="rem-msg-input" placeholder="e.g., Time for your scheduled weekly review or hydration break.">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Recurring Days of Week</label>
+            <div class="days-pill-selector" id="days-pill-selector">
+              <button type="button" class="day-chip active" data-day="1">Mon</button>
+              <button type="button" class="day-chip active" data-day="2">Tue</button>
+              <button type="button" class="day-chip active" data-day="3">Wed</button>
+              <button type="button" class="day-chip active" data-day="4">Thu</button>
+              <button type="button" class="day-chip active" data-day="5">Fri</button>
+              <button type="button" class="day-chip active" data-day="6">Sat</button>
+              <button type="button" class="day-chip active" data-day="0">Sun</button>
+            </div>
+          </div>
+
+          <div class="form-group full-width submit-row">
+            <button type="submit" class="btn-primary">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Save Scheduled Reminder</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Pomodoro Settings -->
+  <div class="modal-backdrop" id="modal-timer-settings">
+    <div class="modal-dialog glass-panel">
+      <div class="modal-header">
+        <h3>Timer Durations</h3>
+        <button class="modal-close" data-close-modal="modal-timer-settings">✕</button>
+      </div>
+      <form id="form-timer-settings">
+        <div class="form-group">
+          <label for="setting-work-duration">Focus Duration (minutes)</label>
+          <input type="number" id="setting-work-duration" min="1" max="120" value="25" required>
+        </div>
+        <div class="form-group">
+          <label for="setting-short-break">Short Break (minutes)</label>
+          <input type="number" id="setting-short-break" min="1" max="60" value="5" required>
+        </div>
+        <div class="form-group">
+          <label for="setting-long-break">Long Break (minutes)</label>
+          <input type="number" id="setting-long-break" min="1" max="90" value="15" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close-modal="modal-timer-settings">Cancel</button>
+          <button type="submit" class="btn-primary">Save Durations</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

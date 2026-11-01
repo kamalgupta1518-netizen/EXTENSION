@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Antigravity New Tab",
+  "version": "1.0.0",
+  "description": "Futuristic glassmorphic New Tab with draggable bookmark & task boards, focus Pomodoro timer, daily scheduled reminders, and interactive zero-gravity physics.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "alarms",
+    "notifications"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
